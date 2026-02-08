@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIO</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    user-select: none;
+}
+
+body {
+    min-height: 100vh;
+    background: #0a0a0f;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    min-height: 100svh;
+    min-height: 100vh;
+
+}
+
+.background {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+#bg-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.55) blur(1px);
+}
+
+#start-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 5, 10, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#start-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.start-title {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #aaa, #fff);
+    color: transparent;
+    background-clip: text;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 500px;
+    padding: 24px 26px 20px;
+    text-align: center;
+}
+
+.avatar-container {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nickname {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    text-shadow: 0 0 18px rgba(255,255,255,.4);
+}
+
+a,
+a:hover,
+a:visited,
+a:active {
+    text-decoration: none;
+    color: inherit;
+}
+
+.description {
+    font-size: 13px;
+    opacity: .6;
+    margin-bottom: 22px;
+}
+
+.socials {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    font-size: 28px;
+    margin-bottom: 28px;
+}
+
+.socials a {
+    transition:
+        transform .45s cubic-bezier(.16,1,.3,1),
+        box-shadow .45s cubic-bezier(.16,1,.3,1),
+        background .45s ease;
+}
+
+.socials a:hover {
+    transform: translateY(-1.5px);
+}
+
+
+
+.links {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.link-item {
+    padding: 14px 18px;
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.18),
+        0 8px 24px rgba(0,0,0,0.35);
+
+    text-decoration: none;
+    color: #fff;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
+}
+
+
+.link-item:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.16);
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.25),
+        0 14px 36px rgba(0,0,0,0.45);
+}
+
+
+.link-title {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.link-url {
+    font-size: 13px;
+    opacity: .7;
+    margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+    .avatar-container {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 10px;
+    }
+
+    .nickname {
+        font-size: 26px;
+    }
+
+    .description {
+        font-size: 12px;
+        margin-bottom: 18px;
+    }
+
+    .container {
+        padding: 20px 18px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .link-item {
+        padding: 16px 18px;
+        border-radius: 16px;
+    }
+
+    .link-title {
+        font-size: 15px;
+    }
+
+    .link-url {
+        font-size: 12px;
+    }
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="background">
+    <video id="bg-video" muted playsinline>
+        <source src="background.mp4" type="video/mp4">
+    </video>
+</div>
+
+<div id="start-screen">
+    <div class="start-title">Tap to enter</div>
+</div>
+
+<div class="container">
+
+    <div class="avatar-container">
+        <img src="avatar.png" class="avatar">
+    </div>
+
+    <div class="nickname">wiskas</div>
+
+    <div class="description">web-designer</div>
+
+    <div class="socials">
+        <a href="https://discord.com/users/1315927053559791637"><i class="fa-brands fa-discord"></i></a>
+        <a href="https://t.me/wiskas_n"><i class="fa-brands fa-telegram"></i></a>
+    </div>
+
+    <div class="links">
+        <a class="link-item" href="https://t.me/rivalvisual">
+            <div class="link-title">Rival Visuals</div>
+            <div class="link-url">The best visuals for minecraft 1.21.4 and 1.21.8</div>
+        </a>
+        <a class="link-item" href="https://t.me/soupvisuals">
+            <div class="link-title">Soup Visuals</div>
+            <div class="link-url">The best visuals for minecraft 1.21.4</div>
+        </a>
+        <a class="link-item" href="#">
+            <div class="link-title">Soon..</div>
+            <div class="link-url">...</div>
+        </a>
+    </div>
+
+</div>
+
+<script>
+const startScreen = document.getElementById('start-screen');
+const video = document.getElementById('bg-video');
+
+const MAX_VOLUME = 0.55;
+const FADE_IN = 1.2;
+const FADE_OUT = 2.5;
+const STEP = 40;
+
+let fadeInterval = null;
+let startedByUser = false;
+
+function fadeVolume(from, to, duration) {
+    if (fadeInterval) clearInterval(fadeInterval);
+
+    const steps = (duration * 1000) / STEP;
+    const step = (to - from) / steps;
+    let current = from;
+
+    fadeInterval = setInterval(() => {
+        current += step;
+        video.volume = Math.max(0, Math.min(MAX_VOLUME, current));
+
+        if (
+            (step > 0 && current >= to) ||
+            (step < 0 && current <= to)
+        ) {
+            video.volume = to;
+            clearInterval(fadeInterval);
+            fadeInterval = null;
+        }
+    }, STEP);
+}
+
+startScreen.addEventListener('click', () => {
+    startedByUser = true;
+    video.muted = true;
+    video.volume = 0;
+    video.currentTime = 0;
+    video.play();
+    startScreen.classList.add('hidden');
+});
+
+video.addEventListener('play', () => {
+    if (!startedByUser) return;
+
+    setTimeout(() => {
+        video.muted = false;
+        fadeVolume(0, MAX_VOLUME, FADE_IN);
+    }, 100);
+});
+
+video.addEventListener('timeupdate', () => {
+    if (!video.duration || fadeInterval) return;
+
+    const timeLeft = video.duration - video.currentTime;
+    if (timeLeft <= FADE_OUT) {
+        fadeVolume(video.volume, 0, timeLeft);
+    }
+});
+
+video.addEventListener('ended', () => {
+    video.muted = true;
+    video.volume = 0;
+    video.currentTime = 0;
+    video.play();
+});
+</script>
+
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+
+document.addEventListener('keydown', e => {
+    if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) ||
+        (e.ctrlKey && e.key === 'U') ||
+        (e.ctrlKey && e.key === 'S')
+    ) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+let devtoolsOpened = false;
+
+setInterval(() => {
+    const start = performance.now();
+    debugger;
+    const end = performance.now();
+
+    if (end - start > 120) {
+        if (!devtoolsOpened) {
+            devtoolsOpened = true;
+            document.body.innerHTML = '';
+        }
+    }
+}, 1000);
+</script>
+
+</body>
+</html>
