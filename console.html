@@ -11,71 +11,152 @@
     padding: 0;
     box-sizing: border-box;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    user-select: none;
 }
 
 body {
     min-height: 100vh;
+    min-height: 100svh;
     background: #0a0a0f;
     color: #fff;
-    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
-h1 {
+.background {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+#bg-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.55) blur(1px);
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 720px;
+    padding: 28px 30px;
+    text-align: center;
+
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+
+    border-radius: 20px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.18),
+        0 20px 60px rgba(0,0,0,0.55);
+}
+
+.title {
     font-size: 28px;
+    font-weight: 800;
     margin-bottom: 30px;
+    text-shadow: 0 0 18px rgba(255,255,255,.35);
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
 }
 
 .card {
-    background: rgba(255,255,255,0.05);
-    padding: 22px;
-    border-radius: 14px;
+    padding: 20px;
+    border-radius: 16px;
+
+    background: rgba(255,255,255,0.02);
+
     box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.12),
-        0 10px 30px rgba(0,0,0,0.45);
+        inset 0 0 0 1px rgba(255,255,255,0.16),
+        0 12px 28px rgba(0,0,0,0.45);
+
+    transition:
+        transform .25s ease,
+        background .25s ease,
+        box-shadow .25s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    background: rgba(255,255,255,0.12);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.25),
+        0 18px 40px rgba(0,0,0,0.55);
 }
 
 .label {
     font-size: 13px;
     opacity: 0.6;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .value {
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 700;
+    text-shadow: 0 0 12px rgba(255,255,255,.25);
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 22px 18px;
+        border-radius: 18px;
+    }
+
+    .title {
+        font-size: 22px;
+        margin-bottom: 22px;
+    }
+
+    .value {
+        font-size: 24px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<h1>Bio Analytics</h1>
+<div class="background">
+    <video id="bg-video" autoplay muted loop playsinline>
+        <source src="background.mp4" type="video/mp4">
+    </video>
+</div>
 
-<div class="grid">
-    <div class="card">
-        <div class="label">Total Views</div>
-        <div id="views" class="value">0</div>
-    </div>
+<div class="container">
+    <div class="title">Bio Analytics</div>
 
-    <div class="card">
-        <div class="label">Total Clicks</div>
-        <div id="clicks_total" class="value">0</div>
-    </div>
+    <div class="grid">
+        <div class="card">
+            <div class="label">Total Views</div>
+            <div id="views" class="value">0</div>
+        </div>
 
-    <div class="card">
-        <div class="label">Rival Visuals Clicks</div>
-        <div id="rivalvisual" class="value">0</div>
-    </div>
+        <div class="card">
+            <div class="label">Total Clicks</div>
+            <div id="clicks_total" class="value">0</div>
+        </div>
 
-    <div class="card">
-        <div class="label">Soup Visuals Clicks</div>
-        <div id="soupvisuals" class="value">0</div>
+        <div class="card">
+            <div class="label">Rival Visuals Clicks</div>
+            <div id="rivalvisual" class="value">0</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Soup Visuals Clicks</div>
+            <div id="soupvisuals" class="value">0</div>
+        </div>
     </div>
 </div>
 
@@ -90,13 +171,11 @@ const firebaseConfig = {
   projectId: "wiskas",
   storageBucket: "wiskas.firebasestorage.app",
   messagingSenderId: "168046348967",
-  appId: "1:168046348967:web:618ed62b398042861ca982",
-  measurementId: "G-HQK41NQLVK"
+  appId: "1:168046348967:web:618ed62b398042861ca982"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 const bioRef = doc(db, "stats", "bio");
 
 onSnapshot(bioRef, snap => {
@@ -117,7 +196,6 @@ onSnapshot(bioRef, snap => {
         data.soupclicks || 0;
 });
 </script>
-
 
 </body>
 </html>
