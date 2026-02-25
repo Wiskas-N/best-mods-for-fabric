@@ -77,6 +77,7 @@ body {
     backdrop-filter: blur(10px);
 }
 
+
 .avatar {
     width: 112px;
     height: 112px;
@@ -86,22 +87,37 @@ body {
 
 .avatar video,
 .avatar img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    display: block;
 }
 
 .avatar-fallback {
+    display: block;
+}
+
+.avatar video {
     display: none;
 }
+
+@media (hover: hover) and (pointer: fine) {
+    .avatar video {
+        display: block;
+    }
+
+    .avatar-fallback {
+        display: none;
+    }
+}
+
 
 .hero h1 {
     font-size: 34px;
     font-weight: 500;
     margin-bottom: 10px;
-    padding-top: -40px;
     color: #ff0000;
     text-shadow:
         0 0 6px rgba(255,0,0,0.9),
@@ -157,15 +173,8 @@ body {
         padding: 24px 18px 20px;
     }
 }
-@media (max-width: 768px) {
-    .avatar video {
-        display: none;
-    }
 
-    .avatar-fallback {
-        display: block;
-    }
-}
+
 .views-fixed {
     position: fixed;
     bottom: 18px;
