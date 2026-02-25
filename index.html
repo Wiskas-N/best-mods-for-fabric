@@ -12,10 +12,9 @@
 <body>
 
 <div class="background">
-    <video id="bg-video" muted playsinline>
-        <source src="background.mp4" type="video/mp4">
-    </video>
+    <img src="background.jpeg" alt="background" class="bg-image">
 </div>
+<audio id="bg-audio" src="background.mp3" loop></audio>
 
 <div class="overlay"></div>
 
@@ -53,70 +52,12 @@
 
 <script>
 const startScreen = document.getElementById('start-screen');
-const video = document.getElementById('bg-video');
-
-const MAX_VOLUME = 0.55;
-const FADE_IN = 1.2;
-const FADE_OUT = 2.5;
-const STEP = 40;
-
-let fadeInterval = null;
-let startedByUser = false;
-
-function fadeVolume(from, to, duration) {
-    if (fadeInterval) clearInterval(fadeInterval);
-
-    const steps = (duration * 1000) / STEP;
-    const step = (to - from) / steps;
-    let current = from;
-
-    fadeInterval = setInterval(() => {
-        current += step;
-        video.volume = Math.max(0, Math.min(MAX_VOLUME, current));
-
-        if (
-            (step > 0 && current >= to) ||
-            (step < 0 && current <= to)
-        ) {
-            video.volume = to;
-            clearInterval(fadeInterval);
-            fadeInterval = null;
-        }
-    }, STEP);
-}
+const audio = document.getElementById('bg-audio');
 
 startScreen.addEventListener('click', () => {
-    startedByUser = true;
-    video.muted = true;
-    video.volume = 0;
-    video.currentTime = 0;
-    video.play();
+    audio.volume = 0.55;
+    audio.play().catch(() => {});
     startScreen.classList.add('hidden');
-});
-
-video.addEventListener('play', () => {
-    if (!startedByUser) return;
-
-    setTimeout(() => {
-        video.muted = false;
-        fadeVolume(0, MAX_VOLUME, FADE_IN);
-    }, 100);
-});
-
-video.addEventListener('timeupdate', () => {
-    if (!video.duration || fadeInterval) return;
-
-    const timeLeft = video.duration - video.currentTime;
-    if (timeLeft <= FADE_OUT) {
-        fadeVolume(video.volume, 0, timeLeft);
-    }
-});
-
-video.addEventListener('ended', () => {
-    video.muted = true;
-    video.volume = 0;
-    video.currentTime = 0;
-    video.play();
 });
 </script>
 
@@ -189,3 +130,4 @@ document.querySelectorAll(".link-item").forEach(link => {
 </body>
 
 </html>
+
