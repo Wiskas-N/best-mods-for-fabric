@@ -52,7 +52,8 @@
 
 <script>
 const startScreen = document.getElementById('start-screen');
-const video = document.getElementById('bg-video');
+const bgVideo = document.getElementById('bg-video');
+const avatarVideo = document.querySelector('.avatar video');
 
 const MAX_VOLUME = 0.55;
 const FADE_IN = 1.2;
@@ -61,6 +62,8 @@ const STEP = 40;
 
 let fadeInterval = null;
 let startedByUser = false;
+
+/* ===== Fade logic ===== */
 
 function fadeVolume(from, to, duration) {
     if (fadeInterval) clearInterval(fadeInterval);
@@ -71,51 +74,66 @@ function fadeVolume(from, to, duration) {
 
     fadeInterval = setInterval(() => {
         current += step;
-        video.volume = Math.max(0, Math.min(MAX_VOLUME, current));
+        bgVideo.volume = Math.max(0, Math.min(MAX_VOLUME, current));
 
         if (
             (step > 0 && current >= to) ||
             (step < 0 && current <= to)
         ) {
-            video.volume = to;
+            bgVideo.volume = to;
             clearInterval(fadeInterval);
             fadeInterval = null;
         }
     }, STEP);
 }
 
+/* ===== Start screen click ===== */
+
 startScreen.addEventListener('click', () => {
     startedByUser = true;
-    video.muted = true;
-    video.volume = 0;
-    video.currentTime = 0;
-    video.play();
+
+    bgVideo.muted = true;
+    bgVideo.volume = 0;
+    bgVideo.currentTime = 0;
+    bgVideo.play();
+
     startScreen.classList.add('hidden');
 });
 
-video.addEventListener('play', () => {
+/* ===== Background video events ===== */
+
+bgVideo.addEventListener('play', () => {
     if (!startedByUser) return;
 
     setTimeout(() => {
-        video.muted = false;
+        bgVideo.muted = false;
         fadeVolume(0, MAX_VOLUME, FADE_IN);
     }, 100);
 });
 
-video.addEventListener('timeupdate', () => {
-    if (!video.duration || fadeInterval) return;
+bgVideo.addEventListener('timeupdate', () => {
+    if (!bgVideo.duration || fadeInterval) return;
 
-    const timeLeft = video.duration - video.currentTime;
+    const timeLeft = bgVideo.duration - bgVideo.currentTime;
+
     if (timeLeft <= FADE_OUT) {
-        fadeVolume(video.volume, 0, timeLeft);
+        fadeVolume(bgVideo.volume, 0, timeLeft);
     }
 });
 
-video.addEventListener('ended', () => {
-    video.muted = true;
-    video.volume = 0;
-    video.currentTime = 0;
-    video.play();
+bgVideo.addEventListener('ended', () => {
+    bgVideo.muted = true;
+    bgVideo.volume = 0;
+    bgVideo.currentTime = 0;
+    bgVideo.play();
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (avatarVideo) {
+        avatarVideo.muted = true;
+        avatarVideo.play().catch(() => {});
+    }
 });
 </script>
 
@@ -188,4 +206,5 @@ document.querySelectorAll(".link-item").forEach(link => {
 </body>
 
 </html>
+
 
