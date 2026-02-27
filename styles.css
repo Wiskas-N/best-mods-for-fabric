@@ -6,6 +6,23 @@
     user-select: none;
 }
 
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+a,
+button,
+.nav-link,
+.food-trigger {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nav-link:focus,
+.food-trigger:focus,
+a:focus {
+    outline: none;
+}
+
 body {
     min-height: 100vh;
     min-height: 100svh;
@@ -245,4 +262,5 @@ body {
     opacity: 1;
     transform: translateY(0);
 }
+
 
