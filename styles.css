@@ -17,7 +17,6 @@ body {
     overflow: hidden;
 }
 
-/* ФОН И АНИМАЦИИ */
 .background {
     position: fixed;
     inset: 0;
@@ -125,10 +124,13 @@ body {
     height: 112px;
     margin: 0 auto 26px;
     position: relative;
+    overflow: hidden;
 }
 
 .avatar video {
-    inset: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     border-radius: 100%;
@@ -188,3 +190,4 @@ body {
     font-size: 14px;
     z-index: 10;
 }
+
