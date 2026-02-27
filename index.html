@@ -84,12 +84,25 @@ document.querySelectorAll('.nav-link').forEach(link => {
 
 const startScreen = document.getElementById('start-screen');
 const audio = document.getElementById('bg-audio');
+const avatarVideo = document.getElementById('avatar-video');
 
-startScreen.addEventListener('click', () => {
+startScreen.addEventListener('click', async () => {
     audio.volume = 0.55;
-    audio.play().catch(() => {});
+
+    try {
+        await audio.play();
+    } catch (e) {}
+
+    try {
+        await avatarVideo.play();
+    } catch (e) {}
+
     startScreen.classList.add('hidden');
 });
+
+document.addEventListener('touchstart', () => {
+    if (avatarVideo) avatarVideo.load();
+}, { once: true });
 </script>
 
 <script type="module">
@@ -126,3 +139,4 @@ onSnapshot(bioRef, snap => {
 
 </body>
 </html>
+
