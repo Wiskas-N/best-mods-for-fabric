@@ -73,7 +73,6 @@
     const isTouchDevice =
       "ontouchstart" in window || navigator.maxTouchPoints > 0
 
-    // Универсальный запуск медиа с повторными попытками
     function tryPlay(media, retries = 3) {
       if (!media) return Promise.resolve()
       const attempt = () =>
@@ -98,11 +97,9 @@
     }
 
     function startExperience() {
-      // iOS Safari требует прямого вызова play() внутри user gesture
       const videoPromise = tryPlay(bgVideo)
       const audioPromise = tryPlay(bgAudio)
 
-      // Авата-видео тоже запускаем на случай если autoplay не сработал
       tryPlay(avatarVideo)
 
       Promise.allSettled([videoPromise, audioPromise]).then(() => {
@@ -112,7 +109,6 @@
         }, 300)
       })
 
-      // Фоллбэк: показываем профиль даже если медиа не загрузилось
       setTimeout(() => {
         startScreen.classList.add("start--hidden")
         setTimeout(() => profile.classList.add("profile--visible"), 300)
@@ -125,7 +121,6 @@
       passive: true
     })
 
-    // Восстановление после сворачивания вкладки (особенно актуально на мобильных)
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         if (bgVideo && bgVideo.paused) bgVideo.play().catch(() => {})
@@ -134,7 +129,6 @@
       }
     })
 
-    // Кастомный курсор только на десктопе
     if (!isTouchDevice) {
       document.addEventListener("mousemove", e => {
         cursor.style.left = e.clientX + "px"
