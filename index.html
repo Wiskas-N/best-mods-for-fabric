@@ -1,281 +1,74 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>wiskascg</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>wiskascg</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="cursor"></div>
+    <div class="cursor"></div>
+    
+    <video id="bg-video" class="bg-video" loop playsinline muted src="background.mp4" preload="auto"></video>
+    <audio id="bg-audio" loop src="background.mp3" preload="auto"></audio>
 
-  <div id="start-screen" class="start">
-    <div class="start__inner">
-      <p class="start__text">tap to enter</p>
+    <div id="start-screen" class="start">
+        <div class="start-content">
+            <div id="loader-circle" class="loader-circle"></div>
+            <p id="status-text">LOADING ASSETS...</p>
+            <div id="enter-hint" class="enter-hint">CLICK TO ENTER</div>
+        </div>
     </div>
-  </div>
 
-  <audio id="bg-audio" loop preload="auto">
-    <source src="background.ogg" type="audio/ogg">
-    <source src="background.mp3" type="audio/mpeg">
-  </audio>
+    <main class="container">
+        <div class="main-card-bg"></div>
 
-  <video id="bg-video" class="bg-video" loop playsinline muted preload="auto" webkit-playsinline>
-    <source src="background.webm" type="video/webm">
-    <source src="background.mp4" type="video/mp4">
-  </video>
+        <div class="bento-grid">
+            <a href="https://discord.com/users/1474075672526852158" target="_blank" class="tile profile-tile">
+                <div class="av-container">
+                    <img id="discord-av" src="" class="avatar">
+                    <div id="status-dot" class="status-indicator"></div>
+                </div>
+                <div class="profile-info">
+                    <h1 id="discord-name">wiskascg</h1>
+                    <span id="discord-tag">@wiskascg</span>
+                </div>
+            </a>
 
-  <main class="profile">
-    <div class="card">
-      <div class="card__glow"></div>
+            <a href="https://t.me/wiskascg" target="_blank" class="tile social-tile tg-main">
+                <i class="fa-brands fa-telegram"></i>
+                <span>лс</span>
+            </a>
 
-      <a class="presence" href="https://discord.com/users/1474075672526852158" target="_blank">
-        <div class="presence__top">
-          <div class="presence__av-wrap" id="av-wrap">
-            <img class="presence__av" id="discord-av" src="" alt="">
-            <span class="presence__status-dot" id="status-dot"></span>
-          </div>
-          <div class="presence__info">
-            <span class="presence__name" id="discord-name">wiskascg</span>
-            <span class="presence__tag" id="discord-tag">@wiskascg</span>
-            <span class="presence__label" id="presence-label">
-              <span class="presence__label-dot" id="label-dot"></span>offline
-            </span>
-          </div>
-          <div class="presence__badge">
-            <i class="fa-brands fa-discord"></i>
-          </div>
+            <a href="https://github.com/wiskas-n" target="_blank" class="tile social-tile github">
+                <i class="fa-brands fa-github"></i>
+                <span>гитхаб</span>
+            </a>
+
+            <a href="https://t.me/wiskas_n" target="_blank" class="tile social-tile tg-channel">
+                <i class="fa-brands fa-telegram"></i>
+                <span>тгк</span>
+            </a>
+            <a href="https://t.me/doxernet" target="_blank" class="tile social-tile tg-main">
+                <i class="fa-brands fa-telegram"></i>
+                <span>твинк</span>
+            </a>
+
+            <a href="https://t.me/+4UAXN-Im8L00MGRl" target="_blank" class="tile projects-tile">
+                <div class="projects-content">
+                    <i class="fa-solid fa-code-branch"></i>
+                    <div class="text">
+                        <strong>проекты</strong>
+                        <small>посмотри мои последние проекты</small>
+                    </div>
+                </div>
+            </a>
+
+            <div id="dynamic-tile" class="tile dynamic-tile" style="display: none;"></div>
         </div>
-        <div class="presence__dynamic" id="presence-dynamic"></div>
-      </a>
+    </main>
 
-      <div class="divider"></div>
-
-      <a class="tg-btn" href="https://t.me/wiskascg" target="_blank">
-        <div class="tg-btn__left">
-          <div class="tg-btn__icon">
-            <i class="fa-brands fa-telegram"></i>
-          </div>
-          <div class="tg-btn__text">
-            <span class="tg-btn__label">Telegram</span>
-            <span class="tg-btn__handle">@wiskascg</span>
-          </div>
-        </div>
-        <div class="tg-btn__arrow">
-          <i class="fa-solid fa-arrow-right"></i>
-        </div>
-      </a>
-    </div>
-  </main>
-
-  <script>
-    const DISCORD_ID = "1474075672526852158"
-
-    const cursor      = document.querySelector(".cursor")
-    const startScreen = document.getElementById("start-screen")
-    const bgVideo     = document.getElementById("bg-video")
-    const bgAudio     = document.getElementById("bg-audio")
-    const profile     = document.querySelector(".profile")
-    const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0
-
-    function tryPlay(media, retries = 3) {
-      if (!media) return Promise.resolve()
-      const attempt = () => media.play().catch(() => {
-        if (retries > 0) return new Promise(r => setTimeout(r, 300)).then(() => tryPlay(media, retries-1))
-      })
-      if (media.readyState < 2) {
-        return new Promise(resolve => {
-          const onReady = () => { media.removeEventListener("canplay", onReady); attempt().then(resolve) }
-          media.addEventListener("canplay", onReady); media.load()
-        })
-      }
-      return attempt()
-    }
-
-    const card = document.querySelector(".card")
-    card.classList.add("links-disabled")
-
-    function startExperience() {
-      bgAudio.volume = 0.2
-      tryPlay(bgVideo); tryPlay(bgAudio)
-      startScreen.classList.add("start--hidden")
-      setTimeout(() => {
-        profile.classList.add("profile--visible")
-        card.classList.remove("links-disabled")
-      }, 250)
-    }
-
-    startScreen.addEventListener("click",      startExperience, { once: true })
-    startScreen.addEventListener("touchstart", startExperience, { once: true, passive: true })
-    setTimeout(startExperience, 3500)
-
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) {
-        if (bgVideo && bgVideo.paused) bgVideo.play().catch(() => {})
-        if (bgAudio && bgAudio.paused) bgAudio.play().catch(() => {})
-      }
-    })
-
-    if (!isTouchDevice) {
-      document.addEventListener("mousemove", e => {
-        cursor.style.left = e.clientX + "px"
-        cursor.style.top  = e.clientY + "px"
-        cursor.style.opacity = "1"
-      })
-      document.addEventListener("mouseleave", () => cursor.style.opacity = "0")
-    } else {
-      cursor.style.display = "none"
-      document.body.style.cursor = "auto"
-    }
-
-    const S = {
-      online:  { color: "#23a55a", glow: "rgba(35,165,90,.8)",   label: "Online" },
-      idle:    { color: "#f0b232", glow: "rgba(240,178,50,.8)",   label: "Idle" },
-      dnd:     { color: "#f23f43", glow: "rgba(242,63,67,.8)",    label: "Do Not Disturb" },
-      offline: { color: "#80848e", glow: "rgba(128,132,142,.5)",  label: "Offline" }
-    }
-    let hb = null
-
-    function connectLanyard() {
-      const ws = new WebSocket("wss://api.lanyard.rest/socket")
-      ws.onopen = () => ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: DISCORD_ID } }))
-      ws.onmessage = ev => {
-        const { op, d, t } = JSON.parse(ev.data)
-        if (op === 1) hb = setInterval(() => ws.readyState === 1 && ws.send(JSON.stringify({ op: 3 })), d.heartbeat_interval)
-        if (op === 0 && (t === "INIT_STATE" || t === "PRESENCE_UPDATE")) render(d)
-      }
-      ws.onclose = () => { clearInterval(hb); setTimeout(connectLanyard, 3000) }
-      ws.onerror = () => ws.close()
-    }
-
-    let spotifyInterval = null
-    function startSpotifyProgress(timestamps) {
-      if (spotifyInterval) clearInterval(spotifyInterval)
-      spotifyInterval = setInterval(() => {
-        const bar = document.querySelector(".spotify__bar-fill")
-        if (!bar || !timestamps?.start || !timestamps?.end) return
-        const pct = Math.min(100, Math.max(0, (Date.now()-timestamps.start)/(timestamps.end-timestamps.start)*100))
-        bar.style.width = pct + "%"
-        if (pct >= 100) clearInterval(spotifyInterval)
-      }, 1000)
-    }
-
-    function x(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;") }
-
-    function sampleGlow(imgSrc, applyFn) {
-      const canvas = document.createElement("canvas"); const SZ = 16
-      canvas.width = SZ; canvas.height = SZ
-      const ctx = canvas.getContext("2d")
-      const img = new Image(); img.crossOrigin = "anonymous"; img.src = imgSrc
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0, SZ, SZ)
-        const d = ctx.getImageData(0,0,SZ,SZ).data
-        let r=0,g=0,b=0,n=0
-        for(let i=0;i<SZ;i++){
-          const add=(px,py)=>{const idx=(py*SZ+px)*4;if(d[idx+3]<10)return;r+=d[idx];g+=d[idx+1];b+=d[idx+2];n++}
-          add(i,0);add(i,SZ-1);add(0,i);add(SZ-1,i)
-        }
-        if(!n)return
-        applyFn(Math.round(r/n),Math.round(g/n),Math.round(b/n))
-      }
-    }
-
-    function render(data) {
-      const sk = data.discord_status || "offline"
-      const s  = S[sk] || S.offline
-
-      const dot = document.getElementById("status-dot")
-      dot.style.background  = s.color
-      dot.style.boxShadow   = `0 0 0 3px #1e1f22, 0 0 10px ${s.glow}`
-
-      const labelDot = document.getElementById("label-dot")
-      labelDot.style.background = s.color
-      labelDot.style.boxShadow  = `0 0 6px ${s.glow}`
-      document.getElementById("presence-label").lastChild.textContent = s.label
-
-      const u  = data.discord_user
-      const av = u.avatar
-        ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${u.avatar.startsWith("a_")?"gif":"png"}?size=160`
-        : `https://cdn.discordapp.com/embed/avatars/0.png`
-
-      const avEl = document.getElementById("discord-av")
-      if (avEl.src !== av) {
-        avEl.src = av
-        sampleGlow(av, (r,g,b) => {
-          document.getElementById("av-wrap").style.boxShadow =
-            `0 0 0 2px rgba(${r},${g},${b},.4), 0 0 20px rgba(${r},${g},${b},.5), 0 0 45px rgba(${r},${g},${b},.2)`
-          document.querySelector(".card__glow").style.background =
-            `radial-gradient(ellipse at 30% 0%, rgba(${r},${g},${b},.18) 0%, transparent 70%)`
-        })
-      }
-
-      document.getElementById("discord-name").textContent = u.global_name || u.username
-      document.getElementById("discord-tag").textContent  = "@" + u.username
-
-      let dynHtml = ""
-
-      if (data.listening_to_spotify && data.spotify) {
-        const sp  = data.spotify
-        const pct = (() => {
-          const ts = sp.timestamps
-          if (!ts?.start || !ts?.end) return 0
-          return Math.min(100, Math.max(0, (Date.now()-ts.start)/(ts.end-ts.start)*100))
-        })()
-        dynHtml += `
-          <div class="spotify">
-            <img class="spotify__art" id="spotify-art" src="${x(sp.album_art_url)}" alt="">
-            <div class="spotify__info">
-              <div class="spotify__badge"><i class="fa-brands fa-spotify"></i> Listening on Spotify</div>
-              <div class="spotify__song">${x(sp.song)}</div>
-              <div class="spotify__artist">${x(sp.artist)}</div>
-              <div class="spotify__bar"><div class="spotify__bar-fill" style="width:${pct}%"></div></div>
-            </div>
-          </div>`
-      }
-
-      const gameAct   = data.activities?.find(a => a.type === 0 || a.type === 1)
-      const customAct = data.activities?.find(a => a.type === 4)
-
-      if (gameAct) {
-        const appIcon = gameAct.application_id
-          ? `https://cdn.discordapp.com/app-icons/${gameAct.application_id}/${gameAct.assets?.large_image}.png?size=64`
-          : null
-        dynHtml += `
-          <div class="activity">
-            ${appIcon ? `<img class="activity__icon" src="${x(appIcon)}" alt="" onerror="this.style.display='none'">` : `<div class="activity__icon activity__icon--fallback"><i class="fa-solid fa-gamepad"></i></div>`}
-            <div class="activity__info">
-              <div class="activity__playing">Playing a game</div>
-              <div class="activity__name">${x(gameAct.name)}</div>
-              ${gameAct.details ? `<div class="activity__detail">${x(gameAct.details)}</div>` : ""}
-              ${gameAct.state   ? `<div class="activity__state">${x(gameAct.state)}</div>`   : ""}
-            </div>
-          </div>`
-      } else if (customAct && (customAct.state || customAct.emoji)) {
-        const emoji = customAct.emoji?.name || ""
-        const text  = customAct.state || ""
-        dynHtml += `
-          <div class="custom-status">
-            ${emoji ? `<span class="custom-status__emoji">${x(emoji)}</span>` : ""}
-            ${text  ? `<span class="custom-status__text">${x(text)}</span>`   : ""}
-          </div>`
-      }
-
-      const dynEl = document.getElementById("presence-dynamic")
-      dynEl.innerHTML = dynHtml
-      dynEl.style.display = dynHtml ? "flex" : "none"
-
-      if (data.listening_to_spotify && data.spotify) {
-        const artEl = document.getElementById("spotify-art")
-        if (artEl) sampleGlow(artEl.src, (r,g,b) => {
-          artEl.style.boxShadow = `0 0 12px rgba(${r},${g},${b},.7), 0 0 28px rgba(${r},${g},${b},.4)`
-        })
-        startSpotifyProgress(data.spotify.timestamps)
-      }
-    }
-
-    connectLanyard()
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>
