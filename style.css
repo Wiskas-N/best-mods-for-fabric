@@ -31,7 +31,6 @@ body { background-color: var(--bg-dark); height: 100vh; display: flex; align-ite
 
 .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
-/* ОБЩИЙ СТИЛЬ ПЛИТОК */
 .tile {
     background: var(--glass);
     border: 1px solid var(--glass-border);
@@ -44,21 +43,19 @@ body { background-color: var(--bg-dark); height: 100vh; display: flex; align-ite
 }
 .tile:hover { transform: translateY(-5px) scale(1.02); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
 
-/* ПРОФИЛЬ */
+
 .profile-tile { grid-column: span 2; flex-direction: row; justify-content: flex-start; gap: 15px; padding: 20px; }
-.av-container { position: relative; width: 60px; height: 60px; }
-.avatar { width: 100%; height: 100%; border-radius: 15px; object-fit: cover; }
+.avatar-wrap {position: relative;width: 60px;height: 60px;flex: 0 0 60px;}
+.avatar-wrap img {width: 100%;height: 100%;display: block;object-fit: cover;border-radius: 15px;}
 .status-indicator { position: absolute; bottom: -2px; right: -2px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #111; }
 .corner-icon { position: absolute; top: 15px; right: 15px; opacity: 0.2; font-size: 18px; }
 
-/* МАЛЕНЬКИЕ ПЛИТКИ */
 .social-tile i { font-size: 24px; margin-bottom: 8px; }
 .social-tile span { font-size: 9px; font-weight: 900; letter-spacing: 1px; opacity: 0.7; }
 .github i { color: #fff; }
 .tg-main i { color: #24A1DE; }
 .tg-channel i { color: #24A1DE; }
 
-/* ПРОЕКТЫ (ДЛИННАЯ) */
 .projects-tile { grid-column: span 3; padding: 18px; flex-direction: row; justify-content: flex-start; gap: 15px; background: linear-gradient(90deg, rgba(88,101,242,0.1), transparent); }
 .projects-content { display: flex; align-items: center; gap: 15px; }
 .projects-content i { font-size: 20px; color: var(--accent); }
@@ -66,7 +63,6 @@ body { background-color: var(--bg-dark); height: 100vh; display: flex; align-ite
 .projects-content strong { font-size: 14px; letter-spacing: 1px; }
 .projects-content small { font-size: 10px; color: var(--text-dim); }
 
-/* SPOTIFY */
 .dynamic-tile { grid-column: span 3; }
 .spotify-flex { display: flex; align-items: center; gap: 15px; width: 100%; }
 .sp-art { width: 50px; height: 50px; border-radius: 10px; }
@@ -78,3 +74,6 @@ body { background-color: var(--bg-dark); height: 100vh; display: flex; align-ite
     .profile-tile, .projects-tile, .dynamic-tile { grid-column: span 2; }
     .main-card-bg { display: none; }
 }
+
+#custom-status-mini{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);backdrop-filter:blur(6px);border-radius:20px;padding:2px 8px;font-size:11px;color:#fff;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;display:none;align-items:center;gap:4px;}
+#custom-status-mini img{width:14px;height:14px;}

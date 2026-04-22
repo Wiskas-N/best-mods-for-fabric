@@ -4,10 +4,14 @@ const startScreen = document.getElementById('start-screen');
 const container = document.querySelector('.container');
 const cursor = document.querySelector('.cursor');
 
+const video = document.getElementById('bg-video');
+const audio = document.getElementById('bg-audio');
+
 let isLoaded = { video: false, audio: false, discord: false };
 
 let spotifyInterval = null;
 let lastSong = null;
+let currentSpotify = null;
 
 function checkReady() {
     if (isLoaded.video && isLoaded.audio && isLoaded.discord) {
@@ -19,32 +23,30 @@ function checkReady() {
             startScreen.classList.add('hidden');
             container.classList.add('visible');
 
-            const video = document.getElementById('bg-video');
-            const audio = document.getElementById('bg-audio');
+            video?.play();
 
-            video.play();
-
-            audio.volume = 0.2;
-            audio.play().catch(() => {});
+            if (audio) {
+                audio.volume = 0.2;
+                audio.play().catch(() => {});
+            }
         };
     }
 }
 
-const video = document.getElementById('bg-video');
-const audio = document.getElementById('bg-audio');
+if (video) {
+    video.onloadeddata = () => {
+        isLoaded.video = true;
+        checkReady();
+    };
+}
 
-// Быстрые события загрузки вместо canplaythrough
-video.onloadeddata = () => {
-    isLoaded.video = true;
-    checkReady();
-};
+if (audio) {
+    audio.oncanplay = () => {
+        isLoaded.audio = true;
+        checkReady();
+    };
+}
 
-audio.oncanplay = () => {
-    isLoaded.audio = true;
-    checkReady();
-};
-
-// fallback если аудио тупит
 setTimeout(() => {
     if (!isLoaded.audio) {
         isLoaded.audio = true;
@@ -53,6 +55,7 @@ setTimeout(() => {
 }, 2000);
 
 document.addEventListener('mousemove', (e) => {
+    if (!cursor) return;
     cursor.style.opacity = "1";
     cursor.style.left = e.clientX + 'px';
     cursor.style.top = e.clientY + 'px';
@@ -66,6 +69,10 @@ function connectLanyard() {
             op: 2,
             d: { subscribe_to_id: DISCORD_ID }
         }));
+    };
+
+    ws.onclose = () => {
+        setTimeout(connectLanyard, 3000);
     };
 
     ws.onmessage = (event) => {
@@ -87,14 +94,21 @@ function updateProfile(data) {
         discord_user,
         discord_status,
         listening_to_spotify,
-        spotify
+        spotify,
+        activities
     } = data;
 
-    document.getElementById('discord-name').textContent =
-        discord_user.global_name || discord_user.username;
+    const nameEl = document.getElementById('discord-name');
+    const avEl = document.getElementById('discord-av');
+    const statusDot = document.getElementById('status-dot');
 
-    document.getElementById('discord-av').src =
-        `https://cdn.discordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.png?size=160`;
+    if (nameEl) {
+        nameEl.textContent = discord_user.global_name || discord_user.username;
+    }
+
+    if (avEl) {
+        avEl.src = `https://cdn.discordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.png?size=160`;
+    }
 
     const colors = {
         online: '#23a55a',
@@ -103,18 +117,65 @@ function updateProfile(data) {
         offline: '#80848e'
     };
 
-    const statusDot = document.getElementById('status-dot');
     const color = colors[discord_status] || colors.offline;
 
-    statusDot.style.background = color;
-    statusDot.style.boxShadow = `0 0 15px ${color}`;
+    if (statusDot) {
+        statusDot.style.background = color;
+        statusDot.style.boxShadow = `0 0 15px ${color}`;
+    }
+
+    const customStatus = activities?.find(a => a.type === 4);
+
+    const miniStatus = document.getElementById('custom-status-mini');
+
+    if (miniStatus) {
+        if (customStatus?.state) {
+            miniStatus.style.display = "flex";
+
+            const emoji = customStatus.emoji
+                ? (customStatus.emoji.id
+                    ? `<img src="https://cdn.discordapp.com/emojis/${customStatus.emoji.id}.png">`
+                    : customStatus.emoji.name)
+                : '';
+
+            miniStatus.innerHTML = `${emoji}${customStatus.state}`;
+        } else {
+            miniStatus.style.display = "none";
+        }
+    }
+
+    const customStatusEl = document.getElementById('custom-status');
+
+    if (customStatusEl) {
+        if (customStatus?.state) {
+            customStatusEl.style.display = "flex";
+
+            customStatusEl.innerHTML = `
+                <div class="custom-status-flex">
+                    ${
+                        customStatus.emoji?.id
+                            ? `<img src="https://cdn.discordapp.com/emojis/${customStatus.emoji.id}.png" class="cs-emoji">`
+                            : `<div class="cs-emoji" style="display:flex;align-items:center;justify-content:center;font-size:24px;">
+                                ${customStatus.emoji?.name || ''}
+                               </div>`
+                    }
+                    <div class="cs-content">
+                        <p class="cs-label">STATUS</p>
+                        <p class="cs-text">${customStatus.state}</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            customStatusEl.style.display = "none";
+        }
+    }
 
     const dynamicTile = document.getElementById('dynamic-tile');
 
     if (listening_to_spotify && spotify) {
+        currentSpotify = spotify;
         dynamicTile.style.display = "block";
 
-        // если трек сменился - перерисовываем
         if (spotify.song !== lastSong) {
             lastSong = spotify.song;
 
@@ -130,22 +191,22 @@ function updateProfile(data) {
                             <div class="sp-progress" id="sp-prog"></div>
                         </div>
                     </div>
-                </div>`;
+                </div>
+            `;
         }
 
-        // чистим старый интервал
-        if (spotifyInterval) clearInterval(spotifyInterval);
+        if (!spotifyInterval) {
+            spotifyInterval = setInterval(() => {
+                const prog = document.getElementById('sp-prog');
+                if (!prog || !currentSpotify) return;
 
-        spotifyInterval = setInterval(() => {
-            const prog = document.getElementById('sp-prog');
-            if (!prog) return;
+                const duration = currentSpotify.timestamps.end - currentSpotify.timestamps.start;
+                const current = Date.now() - currentSpotify.timestamps.start;
 
-            const duration = spotify.timestamps.end - spotify.timestamps.start;
-            const current = Date.now() - spotify.timestamps.start;
-
-            const prc = Math.min(100, (current / duration) * 100);
-            prog.style.width = prc + "%";
-        }, 1000);
+                const prc = Math.min(100, (current / duration) * 100);
+                prog.style.width = prc + "%";
+            }, 1000);
+        }
 
     } else {
         dynamicTile.style.display = "none";
@@ -156,6 +217,7 @@ function updateProfile(data) {
         }
 
         lastSong = null;
+        currentSpotify = null;
     }
 }
 
